@@ -1,5 +1,8 @@
 name: Schedule Riot Challenger ETL Pipeline
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   schedule:
     - cron: '0 0 * * *'
@@ -8,8 +11,6 @@ on:
 jobs:
   run-etl:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     
     steps:
       - name: Checkout repository
