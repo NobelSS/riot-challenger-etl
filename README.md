@@ -1,6 +1,6 @@
 # Riot Challenger ETL Pipeline
 
-A data pipeline that extracts the top 50 Challenger players from the League of Legends API, aggregates their top champion masteries, transforms the payloads logically, and loads them into a fast, compressed Parquet format.
+A data pipeline that extracts the top 50 Challenger players from the Riot League of Legends API, aggregates their top champion masteries, transforms the payloads logically, and loads them into a fast, compressed Parquet format.
 
 ## Architecture
 
