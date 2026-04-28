@@ -1,6 +1,7 @@
 import os
 import time
 import requests
+import random
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 from src.logger import get_logger
@@ -28,23 +29,25 @@ def _make_request(url: str) -> Optional[Dict[str, Any]]:
                 return response.json()
             elif response.status_code == 429:
                 retry_after = int(response.headers.get("Retry-After", 10))
-                logger.warning(f"Rate limited (429). Sleeping for {retry_after} seconds...")
-                time.sleep(retry_after)
+                jitter = random.uniform(0.5, 2.0) 
+                sleep_time = retry_after + jitter
+                
+                logger.warning(f"Rate limited (429). Sleeping for {sleep_time:.2f}s...")
+                time.sleep(sleep_time)
                 retries += 1
                 continue
             elif response.status_code == 404:
-                logger.warning(f"404 Not Found for URL: {url}. Skipping.")
+                logger.warning(f"404 Not Found for URL: {url}.")
                 return None
             else:
-                logger.error(f"API Error {response.status_code} for URL: {url} | Response: {response.text}")
                 response.raise_for_status()
 
         except requests.exceptions.RequestException as e:
-            logger.error(f"Request failed: {e}")
-            time.sleep(5)
+            logger.error(f"Request failed: {e}. Retrying {retries + 1}/{max_retries}")
+            time.sleep(2 ** retries)
             retries += 1
 
-    logger.error(f"Max retries reached for {url}")
+    logger.error(f"Max retries exhausted for {url}")
     return None
 
 def get_challenger_ladder() -> List[Dict[str, Any]]:
